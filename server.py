@@ -37,9 +37,9 @@ def get_lan_ip():
 
 
 def server(drone_ip='192.168.1.1', server_port=6666):
-    TCP_IP = get_lan_ip()
-    #user_in = raw_input('Enter the interface to send data on')
-    TCP_IP = TCP_IP['eth0']
+    #this function takes the drone ip and a port to connect to the drone on that ip
+    #and listens on that port on the panda board to recieve any commands that will sent to control the drone
+    TCP_IP = TCP_IP['eth0'] #getting the IP address of the panda board
     print TCP_IP
     TCP_PORT = server_port
     BUFFER_SIZE = 1024  # Normally 1024, but we want fast response
@@ -47,20 +47,18 @@ def server(drone_ip='192.168.1.1', server_port=6666):
     
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind((TCP_IP, TCP_PORT))
-    s.listen(1)
+    s.listen(1) #listening on the panda board on port=6666 by default
     print "Server Listening on: " + TCP_IP + ":" +str(TCP_PORT)
-    #conn, addr = s.accept()
-    #print 'Connection address:', addr.
     while 1:
-        conn, addr = s.accept()
+        conn, addr = s.accept() #once we accept connection
         print "connection address: " + str(addr)
         var = 'Uninitialized'
-        drone = libardrone.ARDrone(drone_ip)
+        drone = libardrone.ARDrone(drone_ip) #We create a drone object. Now, we are connected to our drone
         while 1:
             
 
             #s=socket.socket(socket_AF_INET, socket.SOCK_STREAM)
-            data = conn.recv(BUFFER_SIZE)
+            data = conn.recv(BUFFER_SIZE)  #recieving commands from the TCP connection and execute the corresponding commands on the drone
             if data == 'False':
                 var = 'False' 
             elif data == 'hover':
@@ -113,14 +111,14 @@ def server(drone_ip='192.168.1.1', server_port=6666):
             if not data: break
             print "received data:", data
             print "var =  " + str(var)
-            conn.send("echo: " + var)  # echo
+            conn.send("echo: " + var)  # echo the command back for testing 
             if str(data)=='False':
                 print "Cutting the connection"
                 break
         
 
-        drone.halt()
-        conn.close()
+        drone.halt() #halt the drone
+        conn.close() #close the connection
         break
     print "Ending the program"
 
