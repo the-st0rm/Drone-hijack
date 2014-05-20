@@ -1,5 +1,5 @@
-import server
 import sys
+import server
 
 if len(sys.argv) < 3:
     print "Usage is filename <ip> <port>"
